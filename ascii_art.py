@@ -208,6 +208,17 @@ LETTER_PATTERNS = {
     ],
 }
 
+COLOR_CODES = {
+    "röd": "\033[31m",
+    "grön": "\033[32m",
+    "gul": "\033[33m",
+    "blå": "\033[34m",
+    "magenta": "\033[35m",
+    "cyan": "\033[36m",
+    "vit": "\033[37m",
+}
+RESET_COLOR = "\033[0m"
+
 
 def render_word(word: str) -> list[str]:
     """Returnera rader med ASCII-grafik för det angivna ordet."""
@@ -235,16 +246,36 @@ def frame_lines(lines: list[str]) -> list[str]:
     return framed
 
 
+def prompt_for_color() -> str:
+    """Be användaren välja en färgkod för bokstäverna."""
+    print("Tillgängliga färger:")
+    for name in COLOR_CODES:
+        print(f"- {name.title()}")
+    while True:
+        choice = input("Välj en färg (eller tryck enter för standardfärg): ").strip().lower()
+        if not choice:
+            return ""
+        if choice in COLOR_CODES:
+            return COLOR_CODES[choice]
+        print("Ogiltigt val. Försök igen.")
+
+
 def main() -> None:
     word = input("Skriv ett ord och tryck enter: ").strip()
     if not word:
         print("Inget ord angavs. Programmet avslutas.")
         return
+    color_choice = prompt_for_color()
     art_lines = render_word(word)
     framed_art = frame_lines(art_lines)
     print()
     for line in framed_art:
-        print(line)
+        if color_choice and line.startswith("* ") and line.endswith(" *"):
+            content = line[2:-2]
+            colored_content = f"{color_choice}{content}{RESET_COLOR}"
+            print(f"* {colored_content} *")
+        else:
+            print(line)
 
 
 if __name__ == "__main__":

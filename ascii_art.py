@@ -327,7 +327,8 @@ def animate_scroll(word: str, color_code: str) -> None:
     """Visa banderollen och låt texten skrolla över skärmen."""
     columns, phases = build_text_columns(word)
     term_size = shutil.get_terminal_size(fallback=(80, 24))
-    width = max(40, term_size.columns)
+    # Respect the real terminal width when available so output does not wrap.
+    width = term_size.columns if term_size.columns > 0 else 80
     height = max(LETTER_HEIGHT + 6, min(term_size.lines or 24, 40))
     amplitude = max(1, min((height - LETTER_HEIGHT) // 2, 6))
     baseline = height // 2 - LETTER_HEIGHT // 2
